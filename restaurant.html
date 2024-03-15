@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="restaurantApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .item {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px;
+            width: 300px;
+            text-align: center;
+            background-color: #fff;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .item img {
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        .cart {
+            margin-top: 20px;
+            border-top: 2px solid #ccc;
+            padding-top: 20px;
+            background-color: #fff;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 5px;
+        }
+        
+        .cart-item {
+            margin-bottom: 10px;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        .remove-button {
+            background-color: #dc3545;
+            margin-top: 10px;
+        }
+        
+        .remove-button:hover {
+            background-color: #bd2130;
+        }
+    </style>
+</head>
+<body>
+    <div ng-controller="MenuController">
+        <h1>Welcome to Our Restaurant</h1>
+        <div class="menu">
+            <div class="item" ng-repeat="menuItem in menuItems">
+                <img ng-src="{{menuItem.image}}" alt="{{menuItem.name}}">
+                <h2>{{menuItem.name}}</h2>
+                <p>{{menuItem.description}}</p>
+                <p>Price: {{menuItem.price}}</p>
+                <button ng-click="addItemToCart(menuItem)">Add Item</button>
+            </div>
+        </div>
+        <div class="cart" ng-show="cart.length > 0">
+            <h2>Cart</h2>
+            <div class="cart-item" ng-repeat="(index, cartItem) in cart">
+                <p>{{cartItem.name}} - {{cartItem.price}} - Quantity: {{cartItem.quantity}}</p>
+                <button class="remove-button" ng-click="removeItemFromCart(index)">Remove Item</button>
+            </div>
+            <p>Total Price: {{getTotalPrice()}}</p>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script>
+        var app = angular.module('restaurantApp', []);
+
+        app.controller('MenuController', function($scope) {
+            $scope.menuItems = [
+                {
+                    name: 'Dosa',
+                    description: 'Delight in the crispy perfection and authentic flavors of our dosas, a South Indian culinary masterpiece waiting to captivate your senses.',
+                    price: 60,
+                    image: 'dosa1.jpeg'
+                },
+                {
+                    name: 'Idli',
+                    description: 'Savor the soft, fluffy texture and delicate flavors of our idlis, a comforting South Indian classic that promises a wholesome culinary experience with every bite.',
+                    price: 50,
+                    image: 'idli.jpeg'
+                },
+                {
+                    name: 'Vada',
+                    description: 'Indulge in the crispy, golden perfection of our vadas, a savory South Indian treat that delights with its crunchy exterior and soft, flavorful interior.',
+                    price: 35,
+                    image: 'vada.jpeg'
+                }
+            ];
+
+            $scope.cart = [];
+
+            $scope.addItemToCart = function(menuItem) {
+                // Check if the item already exists in the cart
+                var index = $scope.cart.findIndex(item => item.name === menuItem.name);
+                if (index !== -1) {
+                    // If item exists, increase its quantity
+                    $scope.cart[index].quantity++;
+                } else {
+                    // If item does not exist, add it to the cart with quantity 1
+                    menuItem.quantity = 1;
+                    $scope.cart.push(menuItem);
+                }
+            };
+
+            $scope.removeItemFromCart = function(index) {
+                // Decrease the quantity of the item by 1
+                $scope.cart[index].quantity--;
+                // If the quantity becomes 0, remove the item from the cart
+                if ($scope.cart[index].quantity === 0) {
+                    $scope.cart.splice(index, 1);
+                }
+            };
+
+            $scope.getTotalPrice = function() {
+                // Calculate total price of all items in the cart
+                var totalPrice = 0;
+                for (var i = 0; i < $scope.cart.length; i++) {
+                    totalPrice += $scope.cart[i].price * $scope.cart[i].quantity;
+                }
+                return totalPrice.toFixed(2);
+            };
+        });
+    </script>
+</body>
+</html>
